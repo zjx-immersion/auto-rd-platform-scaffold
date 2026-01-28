@@ -1,0 +1,29 @@
+/**
+ * DetailPage 样式
+ */
+
+.detail-page {
+  padding: 24px;
+  background: #f0f2f5;
+  min-height: 100%;
+}
+
+.detail-page .ant-card {
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.detail-page-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.detail-page .ant-descriptions {
+  background: #ffffff;
+}
+
+.detail-page .ant-descriptions-item-label {
+  font-weight: 600;
+  background: #fafafa;
+}

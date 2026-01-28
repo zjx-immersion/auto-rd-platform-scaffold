@@ -1,0 +1,68 @@
+/**
+ * PlanTemplateView 样式
+ */
+
+.plan-template-view {
+  padding: 16px;
+}
+
+.template-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+}
+
+.header-title {
+  font-size: 18px;
+  font-weight: 600;
+  color: #262626;
+}
+
+.template-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+  gap: 16px;
+}
+
+.template-card {
+  height: 100%;
+}
+
+.template-description {
+  color: #595959;
+  font-size: 14px;
+  margin-bottom: 16px;
+  line-height: 1.6;
+}
+
+.template-stats {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 12px;
+  background: #fafafa;
+  border-radius: 4px;
+  margin-bottom: 16px;
+}
+
+.stat-item {
+  display: flex;
+  justify-content: space-between;
+  font-size: 13px;
+}
+
+.stat-label {
+  color: #8c8c8c;
+}
+
+.stat-value {
+  color: #262626;
+  font-weight: 600;
+}
+
+.template-actions {
+  display: flex;
+  gap: 8px;
+  justify-content: flex-end;
+}

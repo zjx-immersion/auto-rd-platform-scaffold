@@ -1,0 +1,42 @@
+/**
+ * PlanningDetailPage 样式
+ */
+
+.planning-detail-page {
+  padding: 0;
+  background: #f0f2f5;
+  min-height: calc(100vh - 64px);
+}
+
+.detail-page-header {
+  display: flex;
+  align-items: center;
+  padding: 16px 24px;
+  background: #fff;
+  border-bottom: 1px solid #e8e8e8;
+  margin-bottom: 0;
+}
+
+.header-icon {
+  font-size: 24px;
+  margin-right: 12px;
+}
+
+.header-title {
+  margin: 0;
+  font-size: 20px;
+  font-weight: 600;
+  color: #000;
+}
+
+.planning-detail-loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 400px;
+}
+
+.loading-spinner {
+  font-size: 16px;
+  color: #666;
+}

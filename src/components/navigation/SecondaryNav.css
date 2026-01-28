@@ -1,0 +1,35 @@
+/**
+ * SecondaryNav 样式
+ * 支持主题切换
+ */
+
+.secondary-nav {
+  background: var(--color-bg-primary);
+  border-bottom: 1px solid var(--color-border-secondary);
+  padding: 0 24px;
+  box-shadow: var(--shadow-sm);
+  transition: background-color 0.3s, box-shadow 0.3s;
+}
+
+.secondary-nav .ant-tabs {
+  margin-bottom: 0;
+}
+
+.secondary-nav .ant-tabs-nav {
+  margin-bottom: 0;
+}
+
+.secondary-nav .ant-tabs-tab {
+  padding: 16px 0;
+  margin: 0 32px 0 0;
+  font-size: 15px;
+  font-weight: 500;
+}
+
+.secondary-nav .ant-tabs-tab-active {
+  font-weight: 600;
+}
+
+.secondary-nav .ant-tabs-ink-bar {
+  height: 3px;
+}

@@ -1,0 +1,9 @@
+/**
+ * RequirementListPage 样式
+ */
+
+.requirement-list-page {
+  height: 100%;
+  background: #fff;
+  padding: 16px;
+}

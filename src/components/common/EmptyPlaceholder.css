@@ -1,0 +1,21 @@
+.empty-placeholder {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 400px;
+  padding: 60px 24px;
+  background: #fff;
+}
+
+.empty-placeholder-content h3 {
+  font-size: 18px;
+  font-weight: 600;
+  color: #262626;
+  margin: 16px 0 8px;
+}
+
+.empty-placeholder-content p {
+  font-size: 14px;
+  color: #8c8c8c;
+  margin: 0;
+}

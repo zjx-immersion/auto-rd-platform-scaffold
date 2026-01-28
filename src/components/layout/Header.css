@@ -1,0 +1,190 @@
+/**
+ * Header 样式
+ * 支持主题切换和详情视图二级导航
+ */
+
+.app-header {
+  position: relative;
+  top: 0;
+  left: 0;
+  right: 0;
+  width: 100%;
+  height: 64px;
+  padding: 0 24px !important;
+  background: var(--color-bg-primary) !important;
+  box-shadow: var(--shadow-sm);
+  border-bottom: 1px solid var(--color-border-secondary);
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  line-height: normal;
+  transition: background-color 0.3s, box-shadow 0.3s;
+}
+
+/* 左侧区域 */
+.app-header .header-left {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  flex-shrink: 0;
+}
+
+/* 一级导航标题（列表视图） */
+.app-header .header-module-title {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--color-text-primary);
+  padding: 0;
+  margin-left: 0;
+}
+
+.app-header .header-module-title .module-icon {
+  font-size: 22px;
+  line-height: 1;
+}
+
+.app-header .header-module-title .module-title {
+  line-height: 1;
+  letter-spacing: 0.5px;
+}
+
+/* 菜单按钮样式优化 */
+.app-header .header-left .ant-btn {
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 4px;
+  transition: all 0.3s;
+  margin-right: 8px;
+}
+
+.app-header .header-left .ant-btn:hover {
+  background: var(--color-bg-tertiary);
+  color: var(--color-primary);
+}
+
+/* 导航切换按钮（隐藏状态） */
+.app-header .header-left .nav-toggle-btn {
+  width: 36px;
+  height: 36px;
+  font-size: 16px;
+  margin-right: 12px;
+}
+
+.app-header .header-left .nav-toggle-btn:hover {
+  background: var(--color-primary);
+  color: #ffffff;
+  transform: scale(1.05);
+}
+
+.app-header .logo {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  cursor: pointer;
+}
+
+.app-header .logo-text {
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--color-text-primary);
+  white-space: nowrap;
+  transition: color 0.3s;
+}
+
+/* 中间区域 - 二级导航（详情视图） */
+.app-header .header-center {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  padding: 0 24px;
+  overflow-x: auto;
+  min-width: 0;
+}
+
+.app-header .header-tabs {
+  flex: 1;
+  min-width: 0;
+}
+
+.app-header .header-tabs .ant-tabs-nav {
+  margin: 0 !important;
+  height: 64px;
+}
+
+.app-header .header-tabs .ant-tabs-nav::before {
+  border-bottom: none !important;
+}
+
+.app-header .header-tabs .ant-tabs-tab {
+  padding: 20px 16px !important;
+  margin: 0 8px !important;
+  font-size: 14px;
+}
+
+.app-header .header-tabs .ant-tabs-tab-active {
+  font-weight: 500;
+}
+
+/* 右侧区域 */
+.app-header .header-right {
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+/* Button样式覆盖 */
+.app-header .ant-btn {
+  border-radius: 4px;
+}
+
+.app-header .ant-btn-primary {
+  box-shadow: 0 2px 4px rgba(24, 144, 255, 0.3);
+}
+
+.app-header .ant-btn-primary:hover {
+  box-shadow: 0 4px 8px rgba(24, 144, 255, 0.4);
+}
+
+/* Select样式 */
+.app-header .ant-select {
+  flex-shrink: 0;
+}
+
+/* 响应式布局 */
+@media (max-width: 1400px) {
+  .app-header .header-center {
+    padding: 0 16px;
+  }
+}
+
+@media (max-width: 1200px) {
+  .app-header .header-right .ant-input-search {
+    width: 180px;
+  }
+}
+
+@media (max-width: 768px) {
+  .app-header {
+    padding: 0 16px !important;
+  }
+  
+  .app-header .header-center {
+    padding: 0 8px;
+  }
+  
+  .app-header .header-right .ant-input-search {
+    display: none;
+  }
+  
+  .app-header .header-right .ant-space {
+    gap: 12px !important;
+  }
+}

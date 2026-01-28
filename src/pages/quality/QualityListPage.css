@@ -1,0 +1,32 @@
+/**
+ * QualityListPage 样式
+ */
+
+.quality-list-page {
+  height: 100%;
+  background: #f5f7fa;
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+}
+
+.quality-list-section {
+  background: #fff;
+  margin: 0 16px 16px;
+  border-radius: 4px;
+  padding: 16px;
+}
+
+.section-header {
+  margin-bottom: 16px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid #e8e8e8;
+}
+
+.section-title {
+  font-size: 16px;
+  font-weight: 600;
+  color: #262626;
+  margin: 0;
+  line-height: 1.5;
+}

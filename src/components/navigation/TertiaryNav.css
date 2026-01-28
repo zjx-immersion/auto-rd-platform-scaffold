@@ -1,0 +1,58 @@
+/**
+ * TertiaryNav 样式
+ * 支持主题切换
+ */
+
+.tertiary-nav {
+  width: 220px;
+  background: var(--color-bg-primary);
+  border-right: 1px solid var(--color-border-secondary);
+  height: 100%;
+  overflow-y: auto;
+  transition: background-color 0.3s;
+}
+
+.tertiary-nav .ant-menu {
+  background: var(--color-bg-primary);
+  transition: background-color 0.3s;
+}
+
+.tertiary-nav .ant-menu-item {
+  height: 44px;
+  line-height: 44px;
+  margin: 4px 8px;
+  border-radius: 4px;
+  font-size: 14px;
+}
+
+.tertiary-nav .ant-menu-item:hover {
+  background: var(--color-bg-tertiary);
+}
+
+.tertiary-nav .ant-menu-item-selected {
+  background: rgba(24, 144, 255, 0.1);
+  color: var(--color-primary);
+}
+
+.tertiary-nav .ant-menu-item-selected::after {
+  border-right-color: var(--color-primary);
+  border-right-width: 3px;
+}
+
+/* 滚动条样式 */
+.tertiary-nav::-webkit-scrollbar {
+  width: 6px;
+}
+
+.tertiary-nav::-webkit-scrollbar-track {
+  background: var(--color-bg-tertiary);
+}
+
+.tertiary-nav::-webkit-scrollbar-thumb {
+  background: var(--color-border);
+  border-radius: 3px;
+}
+
+.tertiary-nav::-webkit-scrollbar-thumb:hover {
+  background: var(--color-text-tertiary);
+}

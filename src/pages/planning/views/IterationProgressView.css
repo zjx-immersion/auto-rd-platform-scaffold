@@ -1,0 +1,34 @@
+/**
+ * IterationProgressView 样式
+ */
+
+.iteration-progress-view {
+  padding: 16px;
+  height: 100%;
+}
+
+.progress-tabs {
+  height: 100%;
+}
+
+.time-progress {
+  padding: 16px;
+}
+
+.time-info {
+  display: flex;
+  justify-content: space-between;
+  font-size: 14px;
+  color: #595959;
+}
+
+.chart-placeholder {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 80px;
+  background: #fafafa;
+  border-radius: 8px;
+  margin-top: 16px;
+}

@@ -1,0 +1,54 @@
+/**
+ * IterationPlanView 样式
+ */
+
+.iteration-plan-view {
+  padding: 16px;
+  height: 100%;
+}
+
+.plan-tabs {
+  height: 100%;
+}
+
+.tab-content {
+  padding: 16px 0;
+}
+
+.content-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.content-header h3 {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.summary-cards {
+  display: flex;
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.summary-card {
+  flex: 1;
+  padding: 16px;
+  background: #f5f7fa;
+  border-radius: 8px;
+}
+
+.card-label {
+  font-size: 14px;
+  color: #666;
+  margin-bottom: 8px;
+}
+
+.card-value {
+  font-size: 24px;
+  font-weight: 600;
+  color: var(--color-primary);
+}
