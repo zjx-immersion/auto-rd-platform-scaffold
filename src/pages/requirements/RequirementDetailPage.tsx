@@ -10,6 +10,9 @@ import { EditOutlined, FolderOutlined, AppstoreOutlined } from '@ant-design/icon
 import { useNavigation } from '@/context/NavigationContext'
 import EmptyPlaceholder from '@/components/common/EmptyPlaceholder'
 import RequirementTree from '@/components/trees/RequirementTree'
+import FeatureListView from './views/FeatureListView'
+import SSTSManagementView from './views/SSTSManagementView'
+import MRManagementView from './views/MRManagementView'
 
 // 产品线类型
 interface ProductLine {
@@ -19,7 +22,6 @@ interface ProductLine {
   description: string
   owner: string
   productCount: number
-  epicCount?: number
   featureCount?: number
 }
 
@@ -32,7 +34,6 @@ interface Product {
   owner: string
   status: string
   productLineId: string
-  epicCount?: number
   featureCount?: number
 }
 
@@ -45,7 +46,6 @@ const mockProductLines: ProductLine[] = [
     description: '岚图梦想家产品线',
     owner: '张三',
     productCount: 3,
-    epicCount: 8,
     featureCount: 32
   },
   {
@@ -55,7 +55,6 @@ const mockProductLines: ProductLine[] = [
     description: '岚图FREE产品线',
     owner: '孙七',
     productCount: 2,
-    epicCount: 5,
     featureCount: 20
   }
 ]
@@ -70,7 +69,6 @@ const mockProducts: Product[] = [
     owner: '李四',
     status: '开发中',
     productLineId: 'line-001',
-    epicCount: 3,
     featureCount: 12
   },
   {
@@ -81,7 +79,6 @@ const mockProducts: Product[] = [
     owner: '王五',
     status: '开发中',
     productLineId: 'line-001',
-    epicCount: 3,
     featureCount: 15
   },
   {
@@ -92,7 +89,6 @@ const mockProducts: Product[] = [
     owner: '赵六',
     status: '规划中',
     productLineId: 'line-001',
-    epicCount: 2,
     featureCount: 5
   },
   {
@@ -103,7 +99,7 @@ const mockProducts: Product[] = [
     owner: '周八',
     status: '已完成',
     productLineId: 'line-002',
-    epicCount: 2,
+    ucCount: 2,
     featureCount: 8
   },
   {
@@ -114,7 +110,7 @@ const mockProducts: Product[] = [
     owner: '吴九',
     status: '开发中',
     productLineId: 'line-002',
-    epicCount: 3,
+    ucCount: 3,
     featureCount: 12
   }
 ]
@@ -123,19 +119,19 @@ export const RequirementDetailPage: React.FC = () => {
   const { id, tab } = useParams<{ id: string; tab: string }>()
   const { selectedSecondaryTab } = useNavigation()
   const [loading, setLoading] = useState(false)
-  
+
   // 判断当前是产品线还是产品
   const currentData = useMemo(() => {
     const productLine = mockProductLines.find(pl => pl.id === id)
     if (productLine) {
       return { type: 'productLine', data: productLine }
     }
-    
+
     const product = mockProducts.find(p => p.id === id)
     if (product) {
       return { type: 'product', data: product }
     }
-    
+
     return null
   }, [id])
 
@@ -174,7 +170,7 @@ export const RequirementDetailPage: React.FC = () => {
                   <Statistic title="产品数量" value={line.productCount} suffix="个" />
                 </Col>
                 <Col span={8}>
-                  <Statistic title="Epic数量" value={line.epicCount || 0} suffix="个" />
+                  <Statistic title="UC数量" value={line.ucCount || 0} suffix="个" />
                 </Col>
                 <Col span={8}>
                   <Statistic title="Feature数量" value={line.featureCount || 0} suffix="个" />
@@ -198,7 +194,6 @@ export const RequirementDetailPage: React.FC = () => {
                           </Tag>
                         </Space>
                         <Space>
-                          <span style={{ color: '#666' }}>Epic: {product.epicCount || 0}</span>
                           <span style={{ color: '#666' }}>Feature: {product.featureCount || 0}</span>
                         </Space>
                       </div>
@@ -212,7 +207,7 @@ export const RequirementDetailPage: React.FC = () => {
     } else {
       const product = currentData.data as Product
       const parentLine = mockProductLines.find(pl => pl.id === product.productLineId)
-      
+
       return (
         <Card>
           <Space orientation="vertical" style={{ width: '100%' }} size="large">
@@ -239,10 +234,7 @@ export const RequirementDetailPage: React.FC = () => {
 
             <Card title="📊 统计信息" size="small">
               <Row gutter={16}>
-                <Col span={12}>
-                  <Statistic title="Epic数量" value={product.epicCount || 0} suffix="个" />
-                </Col>
-                <Col span={12}>
+                <Col span={24}>
                   <Statistic title="Feature数量" value={product.featureCount || 0} suffix="个" />
                 </Col>
               </Row>
@@ -270,14 +262,12 @@ export const RequirementDetailPage: React.FC = () => {
         return renderOverview()
       case 'req-tree':
         return renderRequirementTree()
-      case 'epics':
-        return renderPlaceholder('Epic管理')
       case 'features':
-        return renderPlaceholder('Feature列表')
+        return <FeatureListView productLineId={id} />
       case 'ssts':
-        return renderPlaceholder('SSTS管理')
+        return <SSTSManagementView productLineId={id} />
       case 'mrs':
-        return renderPlaceholder('MR管理')
+        return <MRManagementView />
       default:
         return renderOverview()
     }

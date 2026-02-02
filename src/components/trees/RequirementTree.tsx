@@ -22,22 +22,22 @@ import {
   TeamOutlined,
 } from '@ant-design/icons'
 import type { DataNode } from 'antd/es/tree'
-import type { UserRole, Epic, FeatureRequirement, SSTS, ModuleRequirement } from '@/types/domain/requirement'
+import type { UserRole, UC, FeatureRequirement, SSTS, ModuleRequirement } from '@/types/domain/requirement'
 import MockDataServiceV3 from '@/services/MockDataServiceV3'
 
 const RequirementTreeV3: React.FC = () => {
   const { currentRole } = useOutletContext<{ currentRole: UserRole; currentWorkspace: string }>()
-  
-  const allEpics = MockDataServiceV3.generateRequirementTree()
+
+  const allUCs = MockDataServiceV3.generateRequirementTree()
   const productLines = MockDataServiceV3.generateProductTree()
-  
+
   const [selectedNodeKey, setSelectedNodeKey] = useState<string>('ssts-lka-001')
   const [expandedKeys, setExpandedKeys] = useState<string[]>(['epic-l2plus', 'fr-lka-001'])
-  
+
   // 筛选器状态
   const [filterProduct, setFilterProduct] = useState<string | undefined>(undefined)
   const [filterModule, setFilterModule] = useState<string | undefined>(undefined)
-  
+
   // MR详情Modal状态
   const [mrModalVisible, setMrModalVisible] = useState(false)
   const [selectedMR, setSelectedMR] = useState<any>(null)
@@ -45,10 +45,10 @@ const RequirementTreeV3: React.FC = () => {
   /**
    * 根据筛选条件过滤Epic
    */
-  const filteredEpics = useMemo(() => {
-    if (!filterProduct) return allEpics
-    return allEpics.filter(epic => epic.productId === filterProduct)
-  }, [allEpics, filterProduct])
+  const filteredUCs = useMemo(() => {
+    if (!filterProduct) return allUCs
+    return allUCs.filter(epic => epic.productId === filterProduct)
+  }, [allUCs, filterProduct])
 
   /**
    * 获取SSTS拆解的MR列表（模拟数据）
@@ -136,7 +136,7 @@ const RequirementTreeV3: React.FC = () => {
         },
       ],
     }
-    
+
     return mrMap[moduleRequirementId] || []
   }
 
@@ -144,7 +144,7 @@ const RequirementTreeV3: React.FC = () => {
    * 构建树形数据（三层模型）
    */
   const treeData = useMemo((): DataNode[] => {
-    return filteredEpics.map(epic => ({
+    return filteredUCs.map(epic => ({
       key: epic.id,
       title: (
         <Space>
@@ -166,7 +166,7 @@ const RequirementTreeV3: React.FC = () => {
         children: fr.moduleRequirements?.map(mr => {
           // 获取SSTS下的MR列表
           const mrList = getMRListForSSTS(mr.id)
-          
+
           return {
             key: mr.id,
             title: mr.name,
@@ -189,7 +189,7 @@ const RequirementTreeV3: React.FC = () => {
         }),
       })),
     }))
-  }, [filteredEpics])
+  }, [filteredUCs])
 
   /**
    * 获取当前选中的节点数据
@@ -197,9 +197,9 @@ const RequirementTreeV3: React.FC = () => {
   const selectedNode = useMemo(() => {
     if (!selectedNodeKey) return null
 
-    for (const epic of filteredEpics) {
+    for (const epic of filteredUCs) {
       if (epic.id === selectedNodeKey) {
-        return { type: 'epic', data: epic }
+        return { type: 'uc', data: epic }
       }
 
       for (const fr of epic.featureRequirements || []) {
@@ -211,7 +211,7 @@ const RequirementTreeV3: React.FC = () => {
           if (mr.id === selectedNodeKey && mr.ssts?.[0]) {
             return { type: 'ssts', data: mr.ssts[0], mr, fr, epic }
           }
-          
+
           // 查找MR节点
           const mrList = getMRListForSSTS(mr.id)
           for (const mrItem of mrList) {
@@ -224,7 +224,7 @@ const RequirementTreeV3: React.FC = () => {
     }
 
     return null
-  }, [selectedNodeKey, filteredEpics])
+  }, [selectedNodeKey, filteredUCs])
 
   /**
    * 获取产品名称
@@ -266,12 +266,12 @@ const RequirementTreeV3: React.FC = () => {
   /**
    * 渲染Epic详情
    */
-  const renderEpicDetail = (epic: Epic) => {
+  const renderUCDetail = (epic: UC) => {
     return (
       <div>
-        <Card title="📚 Epic信息">
+        <Card title="📚 UC信息">
           <Descriptions column={2}>
-            <Descriptions.Item label="Epic名称">{epic.name}</Descriptions.Item>
+            <Descriptions.Item label="UC名称">{epic.name}</Descriptions.Item>
             <Descriptions.Item label="FIP">{epic.fipId || '-'}</Descriptions.Item>
             <Descriptions.Item label="所属产品">{getProductName(epic.productId)}</Descriptions.Item>
             <Descriptions.Item label="优先级">
@@ -306,9 +306,9 @@ const RequirementTreeV3: React.FC = () => {
                 value={
                   epic.featureRequirements?.length
                     ? Math.round(
-                        (epic.featureRequirements.filter(fr => fr.status === 'DONE').length /
-                          epic.featureRequirements.length) * 100
-                      )
+                      (epic.featureRequirements.filter(fr => fr.status === 'DONE').length /
+                        epic.featureRequirements.length) * 100
+                    )
                     : 0
                 }
                 suffix="%"
@@ -320,7 +320,7 @@ const RequirementTreeV3: React.FC = () => {
         <Card title="⚡ 快捷操作" style={{ marginTop: 16 }}>
           <Space wrap>
             <Button type="primary" icon={<PlusOutlined />}>新增Feature需求</Button>
-            <Button icon={<EditOutlined />}>编辑Epic</Button>
+            <Button icon={<EditOutlined />}>编辑UC</Button>
             <Button>查看产品路标</Button>
           </Space>
         </Card>
@@ -331,13 +331,13 @@ const RequirementTreeV3: React.FC = () => {
   /**
    * 渲染FeatureRequirement详情
    */
-  const renderFRDetail = (fr: FeatureRequirement, epic: Epic) => {
+  const renderFRDetail = (fr: FeatureRequirement, epic: UC) => {
     return (
       <div>
         <Card title="📋 Feature需求信息">
           <Descriptions column={2}>
             <Descriptions.Item label="FR ID">{fr.id}</Descriptions.Item>
-            <Descriptions.Item label="所属Epic">{epic.name}</Descriptions.Item>
+            <Descriptions.Item label="所属UC">{epic.name}</Descriptions.Item>
             <Descriptions.Item label="所属产品">{getProductName(epic.productId)}</Descriptions.Item>
             <Descriptions.Item label="优先级">
               <Tag color={fr.priority === 'HIGH' ? 'red' : 'blue'}>{fr.priority}</Tag>
@@ -362,7 +362,7 @@ const RequirementTreeV3: React.FC = () => {
                 title="成熟度"
                 value={fr.maturity}
                 suffix="%"
-                styles={{ content: {color: fr.maturity >= 90 ? '#52c41a' : fr.maturity >= 70 ? '#faad14' : '#ff4d4f'} }}
+                styles={{ content: { color: fr.maturity >= 90 ? '#52c41a' : fr.maturity >= 70 ? '#faad14' : '#ff4d4f' } }}
               />
               <Progress percent={fr.maturity} strokeColor={fr.maturity >= 90 ? '#52c41a' : '#faad14'} />
             </Col>
@@ -381,9 +381,9 @@ const RequirementTreeV3: React.FC = () => {
           {fr.moduleRequirements && fr.moduleRequirements.length > 0 ? (
             <Space orientation="vertical" style={{ width: '100%' }}>
               {fr.moduleRequirements.map(mr => (
-                <Card 
-                  key={mr.id} 
-                  size="small" 
+                <Card
+                  key={mr.id}
+                  size="small"
                   hoverable
                   onClick={() => setSelectedNodeKey(mr.id)}
                   style={{ cursor: 'pointer' }}
@@ -430,11 +430,11 @@ const RequirementTreeV3: React.FC = () => {
   /**
    * 渲染SSTS详情
    */
-  const renderSSTSDetail = (ssts: SSTS, mr: any, fr: FeatureRequirement, epic: Epic) => {
+  const renderSSTSDetail = (ssts: SSTS, mr: any, fr: FeatureRequirement, epic: UC) => {
     const belongsToModule = '感知模块'
     // 使用moduleRequirement的ID而不是ssts的ID
     const mrList = getMRListForSSTS(mr.id)
-    
+
     return (
       <div>
         <Card title="📄 SSTS信息">
@@ -473,7 +473,7 @@ const RequirementTreeV3: React.FC = () => {
             <Descriptions.Item label="归属FR">
               <Tag>{fr.name}</Tag>
             </Descriptions.Item>
-            <Descriptions.Item label="归属Epic">
+            <Descriptions.Item label="归属UC">
               <Tag>{epic.name}</Tag>
             </Descriptions.Item>
           </Descriptions>
@@ -547,8 +547,8 @@ const RequirementTreeV3: React.FC = () => {
         )}
 
         {/* ⭐ 拆解的模块需求（MR）列表 */}
-        <Card 
-          title={`🔧 拆解的模块需求（MR）（${mrList.length}个）`} 
+        <Card
+          title={`🔧 拆解的模块需求（MR）（${mrList.length}个）`}
           style={{ marginTop: 16 }}
           extra={
             <Button size="small" type="primary" icon={<PlusOutlined />}>
@@ -559,9 +559,9 @@ const RequirementTreeV3: React.FC = () => {
           {mrList.length > 0 ? (
             <Space orientation="vertical" style={{ width: '100%' }}>
               {mrList.map(mr => (
-                <Card 
-                  key={mr.id} 
-                  size="small" 
+                <Card
+                  key={mr.id}
+                  size="small"
                   hoverable
                   style={{ cursor: 'pointer', background: '#fafafa' }}
                 >
@@ -586,10 +586,10 @@ const RequirementTreeV3: React.FC = () => {
                           <Divider type="vertical" />
                           <span>完成度：{mr.completionRate}%</span>
                           <Divider type="vertical" />
-                          <Progress 
-                            percent={mr.completionRate} 
-                            size="small" 
-                            style={{ width: 100 }} 
+                          <Progress
+                            percent={mr.completionRate}
+                            size="small"
+                            style={{ width: 100 }}
                             strokeColor={mr.completionRate >= 100 ? '#52c41a' : '#1890ff'}
                           />
                         </Space>
@@ -597,8 +597,8 @@ const RequirementTreeV3: React.FC = () => {
                     </Col>
                     <Col span={6} style={{ textAlign: 'right' }}>
                       <Space>
-                        <Button 
-                          size="small" 
+                        <Button
+                          size="small"
                           icon={<EyeOutlined />}
                           onClick={() => handleViewMRDetail(mr)}
                         >
@@ -640,7 +640,7 @@ const RequirementTreeV3: React.FC = () => {
   /**
    * 渲染MR详情（新增）
    */
-  const renderMRDetail = (mr: any, ssts: any, sstsNode: any, fr: FeatureRequirement, epic: Epic) => {
+  const renderMRDetail = (mr: any, ssts: any, sstsNode: any, fr: FeatureRequirement, epic: UC) => {
     return (
       <div>
         <Card title="🔧 模块需求（MR）信息">
@@ -679,7 +679,7 @@ const RequirementTreeV3: React.FC = () => {
             <Descriptions.Item label="归属FR">
               <Tag>{fr.name}</Tag>
             </Descriptions.Item>
-            <Descriptions.Item label="归属Epic">
+            <Descriptions.Item label="归属UC">
               <Tag>{epic.name}</Tag>
             </Descriptions.Item>
             <Descriptions.Item label="归属产品">
@@ -697,17 +697,17 @@ const RequirementTreeV3: React.FC = () => {
               <Statistic title="实际工时" value={mr.actualHours} suffix="小时" />
             </Col>
             <Col span={8}>
-              <Statistic 
-                title="完成度" 
-                value={mr.completionRate} 
-                suffix="%" 
-                styles={{ content: {color: mr.completionRate >= 100 ? '#52c41a' : '#1890ff'} }}
+              <Statistic
+                title="完成度"
+                value={mr.completionRate}
+                suffix="%"
+                styles={{ content: { color: mr.completionRate >= 100 ? '#52c41a' : '#1890ff' } }}
               />
             </Col>
           </Row>
           <div style={{ marginTop: 16 }}>
-            <Progress 
-              percent={mr.completionRate} 
+            <Progress
+              percent={mr.completionRate}
               strokeColor={mr.completionRate >= 100 ? '#52c41a' : '#1890ff'}
             />
           </div>
@@ -759,8 +759,8 @@ const RequirementTreeV3: React.FC = () => {
     }
 
     switch (selectedNode.type) {
-      case 'epic':
-        return renderEpicDetail(selectedNode.data as Epic)
+      case 'uc':
+        return renderUCDetail(selectedNode.data as UC)
       case 'featureRequirement':
         return renderFRDetail(selectedNode.data as FeatureRequirement, selectedNode.epic)
       case 'ssts':
@@ -779,57 +779,57 @@ const RequirementTreeV3: React.FC = () => {
           <Col xs={24} sm={24} md={10} lg={10}>
             <Card
               title="🌲 需求全层次树（三层模型）"
-            extra={
-              <Space>
-                <Button size="small" onClick={() => setExpandedKeys([])}>全部收起</Button>
-                <Button size="small" onClick={() => setExpandedKeys(['epic-l2plus', 'fr-lka-001'])}>展开示例</Button>
-              </Space>
-            }
-          >
-            <Card size="small" style={{ marginBottom: 16, background: '#f9f9f9' }}>
-              <Space orientation="vertical" style={{ width: '100%' }} size="small">
-                <div style={{ fontSize: 14, fontWeight: 600, marginBottom: 8 }}>
-                  <FilterOutlined /> 筛选范围
-                </div>
+              extra={
                 <Space>
-                  <span style={{ fontSize: 12, color: '#666' }}>产品：</span>
-                  <Select
-                    value={filterProduct}
-                    onChange={setFilterProduct}
-                    style={{ width: 180 }}
-                    size="small"
-                    options={productOptions}
-                  />
+                  <Button size="small" onClick={() => setExpandedKeys([])}>全部收起</Button>
+                  <Button size="small" onClick={() => setExpandedKeys(['epic-l2plus', 'fr-lka-001'])}>展开示例</Button>
                 </Space>
-                <Space>
-                  <span style={{ fontSize: 12, color: '#666' }}>模块：</span>
-                  <Select
-                    value={filterModule}
-                    onChange={setFilterModule}
-                    style={{ width: 180 }}
-                    size="small"
-                    options={moduleOptions}
-                    disabled
-                  />
-                  <span style={{ fontSize: 12, color: '#999' }}>（开发中）</span>
+              }
+            >
+              <Card size="small" style={{ marginBottom: 16, background: '#f9f9f9' }}>
+                <Space orientation="vertical" style={{ width: '100%' }} size="small">
+                  <div style={{ fontSize: 14, fontWeight: 600, marginBottom: 8 }}>
+                    <FilterOutlined /> 筛选范围
+                  </div>
+                  <Space>
+                    <span style={{ fontSize: 12, color: '#666' }}>产品：</span>
+                    <Select
+                      value={filterProduct}
+                      onChange={setFilterProduct}
+                      style={{ width: 180 }}
+                      size="small"
+                      options={productOptions}
+                    />
+                  </Space>
+                  <Space>
+                    <span style={{ fontSize: 12, color: '#666' }}>模块：</span>
+                    <Select
+                      value={filterModule}
+                      onChange={setFilterModule}
+                      style={{ width: 180 }}
+                      size="small"
+                      options={moduleOptions}
+                      disabled
+                    />
+                    <span style={{ fontSize: 12, color: '#999' }}>（开发中）</span>
+                  </Space>
                 </Space>
-              </Space>
-            </Card>
+              </Card>
 
-            <Input.Search placeholder="搜索Epic、FR、SSTS..." style={{ marginBottom: 16 }} />
-            
-            <Tree
-              showIcon
-              treeData={treeData}
-              selectedKeys={[selectedNodeKey]}
-              expandedKeys={expandedKeys}
-              onSelect={keys => setSelectedNodeKey(keys[0] as string)}
-              onExpand={keys => setExpandedKeys(keys as string[])}
-              height={600}
-              style={{ background: '#fafafa', padding: 16, borderRadius: 4 }}
-            />
-          </Card>
-        </Col>
+              <Input.Search placeholder="搜索Epic、FR、SSTS..." style={{ marginBottom: 16 }} />
+
+              <Tree
+                showIcon
+                treeData={treeData}
+                selectedKeys={[selectedNodeKey]}
+                expandedKeys={expandedKeys}
+                onSelect={keys => setSelectedNodeKey(keys[0] as string)}
+                onExpand={keys => setExpandedKeys(keys as string[])}
+                height={600}
+                style={{ background: '#fafafa', padding: 16, borderRadius: 4 }}
+              />
+            </Card>
+          </Col>
 
           <Col xs={24} sm={24} md={14} lg={14}>
             {renderDetailPanel()}
@@ -891,17 +891,17 @@ const RequirementTreeV3: React.FC = () => {
                   <Statistic title="实际工时" value={selectedMR.actualHours} suffix="小时" />
                 </Col>
                 <Col span={8}>
-                  <Statistic 
-                    title="完成度" 
-                    value={selectedMR.completionRate} 
-                    suffix="%" 
-                    styles={{ content: {color: selectedMR.completionRate >= 100 ? '#52c41a' : '#1890ff'} }}
+                  <Statistic
+                    title="完成度"
+                    value={selectedMR.completionRate}
+                    suffix="%"
+                    styles={{ content: { color: selectedMR.completionRate >= 100 ? '#52c41a' : '#1890ff' } }}
                   />
                 </Col>
               </Row>
               <div style={{ marginTop: 16 }}>
-                <Progress 
-                  percent={selectedMR.completionRate} 
+                <Progress
+                  percent={selectedMR.completionRate}
                   strokeColor={selectedMR.completionRate >= 100 ? '#52c41a' : '#1890ff'}
                 />
               </div>

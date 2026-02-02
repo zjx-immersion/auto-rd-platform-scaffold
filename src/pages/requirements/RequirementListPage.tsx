@@ -1,8 +1,3 @@
-/**
- * C1产品需求 - 列表页面
- * 显示产品线-产品层级列表
- */
-
 import React, { useState, useMemo } from 'react'
 import { Table, Button, Input, Space, Tag } from 'antd'
 import { SearchOutlined, ReloadOutlined, EyeOutlined, FolderOutlined, AppstoreOutlined } from '@ant-design/icons'
@@ -104,15 +99,11 @@ const mockProductLines: ProductLine[] = [
 
 export const RequirementListPage: React.FC = () => {
   const navigate = useNavigate()
-  const { selectedTertiaryTab } = useNavigation()
+  const { selectedTertiaryItem } = useNavigation()
   const [searchText, setSearchText] = useState('')
   const [expandedRowKeys, setExpandedRowKeys] = useState<string[]>([])
 
-  // 根据三级导航判断是否显示内容
-  // 默认显示"全部产品线"，如果selectedTertiaryTab为空或为'all-lines'
-  const shouldShowContent = !selectedTertiaryTab || selectedTertiaryTab === 'all-lines'
-
-  // 根据三级导航筛选数据（所有 Hooks 必须在条件返回之前调用）
+  // 将filteredData提升到组件顶层（修复Hook违规）
   const filteredData = useMemo(() => {
     let data = mockProductLines
 
@@ -131,24 +122,7 @@ export const RequirementListPage: React.FC = () => {
     }
 
     return data
-  }, [selectedTertiaryTab, searchText])
-
-  // 如果不是"全部产品线"，显示占位符
-  if (!shouldShowContent) {
-    const tabTitles: Record<string, string> = {
-      'my-lines': '我的产品线',
-      'my-products': '我的产品',
-      'my-projects': '我的项目',
-    }
-    return (
-      <div className="requirement-list-page">
-        <EmptyPlaceholder 
-          title={tabTitles[selectedTertiaryTab] || '功能开发中'}
-          description="还在加速研发中..."
-        />
-      </div>
-    )
-  }
+  }, [searchText])
 
   // 处理行展开/收起
   const handleExpand = (expanded: boolean, record: ProductLine) => {
@@ -264,48 +238,77 @@ export const RequirementListPage: React.FC = () => {
     },
   ]
 
-  return (
-    <div className="requirement-list-page">
-      {/* 搜索和筛选工具栏 */}
-      <div className="toolbar">
-        <Space size="middle">
-          <Input.Search
-            placeholder="搜索关键词..."
-            allowClear
-            style={{ width: 300 }}
-            value={searchText}
-            onChange={(e) => setSearchText(e.target.value)}
-            prefix={<SearchOutlined />}
+  // 渲染产品线列表
+  const renderProductLineList = () => {
+    return (
+      <div className="requirement-list-page">
+        {/* 搜索和筛选工具栏 */}
+        <div className="toolbar">
+          <Space size="middle">
+            <Input.Search
+              placeholder="搜索关键词..."
+              allowClear
+              style={{ width: 300 }}
+              value={searchText}
+              onChange={(e) => setSearchText(e.target.value)}
+              prefix={<SearchOutlined />}
+            />
+          </Space>
+
+          <Button icon={<ReloadOutlined />} onClick={() => setSearchText('')}>
+            刷新
+          </Button>
+        </div>
+
+        {/* 产品线层级表格 */}
+        <div className="table-container">
+          <Table
+            columns={columns}
+            dataSource={filteredData}
+            rowKey="id"
+            expandable={{
+              expandedRowKeys,
+              onExpand: handleExpand,
+              childrenColumnName: 'children',
+              indentSize: 30,
+            }}
+            pagination={{
+              total: filteredData.length,
+              pageSize: 10,
+              showSizeChanger: true,
+              showTotal: (total) => `共 ${total} 条`,
+            }}
           />
-        </Space>
-
-        <Button icon={<ReloadOutlined />} onClick={() => setSearchText('')}>
-          刷新
-        </Button>
+        </div>
       </div>
+    )
+  }
 
-      {/* 产品线层级表格 */}
-      <div className="table-container">
-        <Table
-          columns={columns}
-          dataSource={filteredData}
-          rowKey="id"
-          expandable={{
-            expandedRowKeys,
-            onExpand: handleExpand,
-            childrenColumnName: 'children',
-            indentSize: 30,
-          }}
-          pagination={{
-            total: filteredData.length,
-            pageSize: 10,
-            showSizeChanger: true,
-            showTotal: (total) => `共 ${total} 条`,
-          }}
-        />
-      </div>
-    </div>
-  )
+  // 根据三级导航渲染不同内容
+  const renderContent = () => {
+    // 如果选中其他未实现的导航项，显示占位符
+    if (selectedTertiaryItem && selectedTertiaryItem !== 'all-lines') {
+      const tabTitles: Record<string, string> = {
+        'my-lines': '我的产品线',
+        'my-products': '我的产品',
+        'my-projects': '我的项目',
+      }
+      return (
+        <div className="requirement-list-page">
+          <EmptyPlaceholder
+            title={tabTitles[selectedTertiaryItem] || '功能开发中'}
+            description="还在加速研发中..."
+          />
+        </div>
+      )
+    }
+
+    // 默认显示产品线列表（selectedTertiaryItem为空或为'all-lines'）
+    return renderProductLineList()
+  }
+
+  // 主渲染
+  return renderContent()
 }
 
 export default RequirementListPage

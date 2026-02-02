@@ -3,14 +3,15 @@
  */
 
 .list-page {
-  padding: 24px;
-  background: #f0f2f5;
+  padding: 0;
+  background: transparent;
   min-height: 100%;
 }
 
 .list-page .ant-card {
-  border-radius: 8px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  border-radius: 0;
+  box-shadow: none;
+  margin: 0;
 }
 
 .list-page-toolbar {
@@ -46,11 +47,11 @@
   background: #ffffff;
 }
 
-.list-page .ant-table-thead > tr > th {
+.list-page .ant-table-thead>tr>th {
   background: #fafafa;
   font-weight: 600;
 }
 
-.list-page .ant-table-tbody > tr:hover > td {
+.list-page .ant-table-tbody>tr:hover>td {
   background: #f5f5f5;
 }

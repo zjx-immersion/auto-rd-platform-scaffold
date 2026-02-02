@@ -15,7 +15,7 @@ import { mockListQuery } from '@/utils/mockData'
 import './ProjectListPage.css'
 
 export const ProjectListPage: React.FC = () => {
-  const { openDetail, selectedTertiaryTab } = useNavigation()
+  const { openDetail, selectedTertiaryItem } = useNavigation()
   const [loading, setLoading] = useState(false)
   const [dataSource, setDataSource] = useState<Project[]>([])
   const [total, setTotal] = useState(0)
@@ -29,7 +29,7 @@ export const ProjectListPage: React.FC = () => {
     let filtered = mockProjects
 
     // 根据三级导航筛选
-    switch (selectedTertiaryTab) {
+    switch (selectedTertiaryItem) {
       case 'all':
         // 全部项目 - 不筛选
         break
@@ -50,7 +50,7 @@ export const ProjectListPage: React.FC = () => {
     }
 
     return filtered
-  }, [selectedTertiaryTab])
+  }, [selectedTertiaryItem])
 
   // 加载数据
   const loadData = useCallback(async () => {
@@ -70,10 +70,10 @@ export const ProjectListPage: React.FC = () => {
   }, [loadData])
 
   // 如果数据为空且不是搜索/筛选结果，显示占位符
-  const shouldShowPlaceholder = 
-    !loading && 
-    dataSource.length === 0 && 
-    (selectedTertiaryTab === 'my' || selectedTertiaryTab === 'archived')
+  const shouldShowPlaceholder =
+    !loading &&
+    dataSource.length === 0 &&
+    (selectedTertiaryItem === 'my' || selectedTertiaryItem === 'archived')
 
   if (shouldShowPlaceholder) {
     const tabTitles: Record<string, string> = {
@@ -82,8 +82,8 @@ export const ProjectListPage: React.FC = () => {
     }
     return (
       <div className="project-list-page">
-        <EmptyPlaceholder 
-          title={tabTitles[selectedTertiaryTab] || '暂无数据'}
+        <EmptyPlaceholder
+          title={tabTitles[selectedTertiaryItem] || '暂无数据'}
           description="还在加速研发中..."
         />
       </div>
@@ -220,19 +220,17 @@ export const ProjectListPage: React.FC = () => {
   ]
 
   return (
-    <div className="project-list-page">
-      <ListPage<Project>
-        dataSource={dataSource}
-        total={total}
-        columns={columns}
-        filters={filters}
-        actions={actions}
-        loading={loading}
-        queryParams={queryParams}
-        onQueryChange={(params) => setQueryParams(params)}
-        onRefresh={loadData}
-      />
-    </div>
+    <ListPage<Project>
+      dataSource={dataSource}
+      total={total}
+      columns={columns}
+      filters={filters}
+      actions={actions}
+      loading={loading}
+      queryParams={queryParams}
+      onQueryChange={(params) => setQueryParams(params)}
+      onRefresh={loadData}
+    />
   )
 }
 

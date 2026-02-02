@@ -5,9 +5,9 @@
 
 import type { BaseEntity, Status, Priority, MoSCoW, ApprovalRecord } from '../common'
 
-// ==================== Epic ====================
+// ==================== UC (Use Case) ====================
 
-export enum EpicStatus {
+export enum UCStatus {
   DRAFT = 'DRAFT',
   PLANNING = 'PLANNING',
   IN_PROGRESS = 'IN_PROGRESS',
@@ -15,28 +15,28 @@ export enum EpicStatus {
   CANCELLED = 'CANCELLED',
 }
 
-export interface Epic extends BaseEntity {
+export interface UC extends BaseEntity {
   name: string
   code: string
   description: string
-  status: EpicStatus
+  status: UCStatus
   priority: Priority
   moscow: MoSCoW
-  
+
   // 关联
   productLineId: string
   ownerId: string // PO
-  
+
   // 业务价值
   businessValue: string
   targetUsers: string[]
-  
+
   // 统计
   featureCount: number
   totalStoryPoints: number
   completedStoryPoints: number
   progress: number // 0-100
-  
+
   // 时间
   startDate?: string
   targetDate?: string
@@ -61,27 +61,27 @@ export interface Feature extends BaseEntity {
   description: string
   status: FeatureStatus
   priority: Priority
-  
+
   // 关联
-  epicId: string
+  ucId: string
   productId: string
   ownerId: string // FO (Feature Owner)
-  
+
   // PRD
   prdContent?: string // 富文本内容
   prdVersion?: string
   prdStatus?: 'DRAFT' | 'IN_REVIEW' | 'APPROVED'
-  
+
   // 验收标准
   acceptanceCriteria: AcceptanceCriterion[]
-  
+
   // 统计
   sstsCount: number
   mrCount: number
   storyPoints: number
   maturity: number // 成熟度 0-100
   completeness: number // 完成度 0-100
-  
+
   // 时间
   startDate?: string
   targetDate?: string
@@ -129,25 +129,25 @@ export interface SSTS extends BaseEntity {
   type: SSTSType
   status: SSTSStatus
   priority: Priority
-  
+
   // 关联
   featureId: string
   moduleId?: string
   ownerId: string // SE (System Engineer) or FO
-  
+
   // 规格
   functionalSpec?: string // 功能规格
   technicalSpec?: string // 技术规格
   performanceSpec?: string // 性能规格
   safetyLevel?: SafetyLevel
-  
+
   // 验证
   verificationMethod: 'TEST' | 'ANALYSIS' | 'INSPECTION' | 'DEMONSTRATION'
   verificationCriteria?: string
-  
+
   // 统计
   mrCount: number
-  
+
   // 评审
   reviews: ApprovalRecord[]
 }
@@ -178,30 +178,30 @@ export interface MR extends BaseEntity {
   description: string
   status: MRStatus
   priority: Priority
-  
+
   // 关联
   sstsId: string
   moduleId: string
   teamId: string
   assigneeId?: string // SO (System Owner)
-  
+
   // 接口设计
   interfaces: ModuleInterface[]
-  
+
   // 工作量
   estimatedEffort: number // 人日
   actualEffort?: number
-  
+
   // 资产复用
   reuseStrategy: ReuseStrategy
   reusedAssetId?: string
   reusedAssetVersion?: string
   effortSaved?: number // 节省的工作量（人日）
-  
+
   // 就绪检查
   isReady: boolean
   readinessChecks: ReadinessCheck[]
-  
+
   // 评审
   reviews: ApprovalRecord[]
 }
@@ -224,12 +224,12 @@ export interface ReadinessCheck {
 
 // ==================== 关系数据类型 ====================
 
-export interface EpicWithFeatures extends Epic {
+export interface UCWithFeatures extends UC {
   features: Feature[]
 }
 
 export interface FeatureWithDetails extends Feature {
-  epic: Epic
+  uc: UC
   product: any // 引用Product类型
   ssts: SSTS[]
   mrs: MR[]
