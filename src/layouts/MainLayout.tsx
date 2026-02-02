@@ -20,7 +20,7 @@ const { Sider, Content } = Layout
 export const MainLayout: React.FC = () => {
   // 从 localStorage 加载初始状态
   const initialState = loadNavState()
-  
+
   // 分离两个独立的状态
   const [isPinned, setIsPinned] = useState(initialState.isPinned) // 固定/悬浮状态
   const [navWidth, setNavWidth] = useState(initialState.navWidth) // 导航宽度
@@ -82,7 +82,7 @@ export const MainLayout: React.FC = () => {
 
     const handleMouseMove = (e: MouseEvent) => {
       const newWidth = e.clientX
-      
+
       // 根据拖拽位置判断档位（只调整宽度，不改变固定/悬浮状态）
       if (newWidth < (NAV_WIDTH.COLLAPSED + NAV_WIDTH.DEFAULT) / 2) {
         // 靠近收起档位（小于140px）
@@ -156,7 +156,7 @@ export const MainLayout: React.FC = () => {
               onToggleCollapse={handleToggleCollapse}
             />
           </Sider>
-          
+
           {/* 拖拽手柄 */}
           <div
             className="nav-resize-handle"
@@ -255,7 +255,7 @@ export const MainLayout: React.FC = () => {
         }}
       >
         {/* Header（含二级导航）- 仅覆盖右侧 */}
-        <HeaderWithNav 
+        <HeaderWithNav
           onToggleDrawer={handleToggleDrawer}
           navState={isPinned ? 'expanded' : 'hidden'}
         />
@@ -264,21 +264,18 @@ export const MainLayout: React.FC = () => {
         <Layout
           style={{
             marginTop: 0,
-            background: '#f0f2f5',
           }}
         >
           <Content
             style={{
-              padding: 0,
               minHeight: 'calc(100vh - 64px)',
-              background: '#f0f2f5',
             }}
           >
             {/* 三级导航 + 主内容 */}
             <div style={{ display: 'flex', height: 'calc(100vh - 64px)' }}>
               {/* 三级导航 */}
               <TertiaryNav />
-              
+
               {/* 路由出口：页面内容 */}
               <div style={{ flex: 1, overflow: 'auto' }}>
                 <Outlet context={{ selectedModule, onModuleChange: handleModuleChange }} />

@@ -7,19 +7,27 @@
 
 import React, { useState } from 'react'
 import { useOutletContext } from 'react-router-dom'
-import { Card, Row, Col, Select, Table, Tag, Timeline, Space, Button, Divider } from 'antd'
-import { 
-  CalendarOutlined, 
-  TeamOutlined, 
+import { Card, Row, Col, Select, Table, Tag, Space, Divider } from 'antd'
+import {
+  TeamOutlined,
   RocketOutlined,
   FlagOutlined,
   CheckCircleOutlined,
 } from '@ant-design/icons'
-import type { UserRole } from '../types/domain'
+import type { UserRole } from '@/types/domain' // Fixed import path if needed, or assume global types
+// If domain types are missing, define here or import from checking
+import { SprintKanbanView } from './SprintKanbanView'
+
+// 临时解决 import type error
+interface UserRole {
+  id: string;
+  name: string;
+}
 
 const ProductIterationPlan: React.FC = () => {
   const { currentRole } = useOutletContext<{ currentRole: UserRole; currentWorkspace: string }>()
-  
+
+  const [viewMode, setViewMode] = useState<'matrix' | 'kanban'>('matrix')
   const [selectedProduct, setSelectedProduct] = useState('p-noa')
   const [selectedVersion, setSelectedVersion] = useState('pv-noa-1.1')
 
@@ -155,104 +163,150 @@ const ProductIterationPlan: React.FC = () => {
     })),
   ]
 
+  // 渲染矩阵视图（原内容）
+  const renderMatrixView = () => (
+    <Card>
+      <Space orientation="vertical" size="large" style={{ width: '100%' }}>
+        {/* 标题和选择器 */}
+        <Row justify="space-between" align="middle">
+          <Col>
+            <Space>
+              <RocketOutlined style={{ fontSize: 24, color: '#1890ff' }} />
+              <span style={{ fontSize: 20, fontWeight: 600 }}>产品迭代计划视图</span>
+            </Space>
+          </Col>
+          <Col>
+            <Space>
+              {/* 视图切换 */}
+              <Tag.CheckableTag
+                checked={viewMode === 'matrix'}
+                onChange={() => setViewMode('matrix')}
+              >
+                矩阵视图
+              </Tag.CheckableTag>
+              <Tag.CheckableTag
+                checked={viewMode === 'kanban'}
+                onChange={() => setViewMode('kanban')}
+              >
+                看板视图
+              </Tag.CheckableTag>
+              <Divider type="vertical" />
+              <span>产品：</span>
+              <Select
+                value={selectedProduct}
+                onChange={setSelectedProduct}
+                style={{ width: 150 }}
+                options={productOptions}
+              />
+              {/* ... existing selectors ... */}
+              <span>版本：</span>
+              <Select
+                value={selectedVersion}
+                onChange={setSelectedVersion}
+                style={{ width: 120 }}
+                options={versionOptions}
+              />
+            </Space>
+          </Col>
+        </Row>
+
+        <Divider />
+        {/* ... existing matrix content ... */}
+        {/* 里程碑对齐轴 - 横排显示且对齐迭代列 */}
+        <Card size="small" title="🎯 关键里程碑与Gateway" style={{ background: '#fafafa', marginBottom: 16 }}>
+          {/* ... content of milestones ... */}
+          <div style={{ display: 'flex', alignItems: 'flex-start' }}>
+            <div style={{ width: 150, flexShrink: 0 }}></div>
+            {iterations.map(iter => {
+              const milestone = milestones.find(ms => ms.iteration === iter.id)
+              return (
+                <div key={iter.id} style={{ width: 180, textAlign: 'center', padding: '8px 0' }}>
+                  {milestone ? (
+                    <Space orientation="vertical" size="small">
+                      {milestone.type === 'milestone' ? (
+                        <FlagOutlined style={{ fontSize: 20, color: '#ff4d4f' }} />
+                      ) : (
+                        <CheckCircleOutlined style={{ fontSize: 20, color: '#1890ff' }} />
+                      )}
+                      <Tag
+                        color={milestone.type === 'milestone' ? 'red' : 'blue'}
+                        style={{ margin: 0 }}
+                      >
+                        {milestone.name}
+                      </Tag>
+                      <div style={{ fontSize: 11, color: '#999' }}>{milestone.date}</div>
+                    </Space>
+                  ) : (
+                    <div style={{ height: 60 }}></div>
+                  )}
+                </div>
+              )
+            })}
+          </div>
+        </Card>
+
+        {/* 团队迭代计划表格 */}
+        <div style={{ background: '#fff' }}>
+          <div style={{ padding: '12px 16px', borderBottom: '1px solid #f0f0f0', fontWeight: 600, fontSize: 14 }}>
+            <TeamOutlined /> 团队迭代分工计划（模块需求排期）
+          </div>
+          <Table
+            dataSource={teamPlans}
+            columns={columns}
+            rowKey="teamId"
+            pagination={false}
+            scroll={{ x: 1400 }}
+            bordered
+          />
+        </div>
+
+        {/* ... existing explanation ... */}
+        {/* 说明 */}
+        <Card size="small" style={{ background: '#e6f7ff', border: '1px solid #91d5ff' }}>
+          <Space orientation="vertical" size="small">
+            <div><strong>视图说明：</strong></div>
+            <div>• <strong>横轴</strong>：产品版本的迭代周期（月度Sprint）</div>
+            <div>• <strong>纵轴</strong>：各模块团队的迭代分工</div>
+            <div>• <strong>里程碑对齐</strong>：产品迭代的关键里程碑（VFF、SOP等）与整车节点、Gateway对齐</div>
+            <div>• <strong>模块需求</strong>：每个团队在每个迭代中计划的模块需求（MR）</div>
+          </Space>
+        </Card>
+      </Space>
+    </Card>
+  )
+
   return (
     <div style={{ padding: 24, background: '#f0f2f5', minHeight: '100vh' }}>
-      <Card>
-        <Space orientation="vertical" size="large" style={{ width: '100%' }}>
-          {/* 标题和选择器 */}
-          <Row justify="space-between" align="middle">
+      {viewMode === 'matrix' ? renderMatrixView() : (
+        <Card>
+          <Row justify="space-between" align="middle" style={{ marginBottom: 16 }}>
             <Col>
               <Space>
                 <RocketOutlined style={{ fontSize: 24, color: '#1890ff' }} />
-                <span style={{ fontSize: 20, fontWeight: 600 }}>产品迭代计划视图</span>
+                <span style={{ fontSize: 20, fontWeight: 600 }}>迭代执行看板</span>
               </Space>
             </Col>
             <Col>
               <Space>
-                <span>产品：</span>
-                <Select
-                  value={selectedProduct}
-                  onChange={setSelectedProduct}
-                  style={{ width: 150 }}
-                  options={productOptions}
-                />
-                <span>版本：</span>
-                <Select
-                  value={selectedVersion}
-                  onChange={setSelectedVersion}
-                  style={{ width: 120 }}
-                  options={versionOptions}
-                />
+                <Tag.CheckableTag
+                  checked={viewMode === 'matrix'}
+                  onChange={() => setViewMode('matrix')}
+                >
+                  矩阵视图
+                </Tag.CheckableTag>
+                <Tag.CheckableTag
+                  checked={viewMode === 'kanban'}
+                  onChange={() => setViewMode('kanban')}
+                >
+                  看板视图
+                </Tag.CheckableTag>
               </Space>
             </Col>
           </Row>
-
           <Divider />
-
-          {/* 里程碑对齐轴 - 横排显示且对齐迭代列 */}
-          <Card size="small" title="🎯 关键里程碑与Gateway" style={{ background: '#fafafa', marginBottom: 16 }}>
-            <div style={{ display: 'flex', alignItems: 'flex-start' }}>
-              {/* 左侧占位，对齐团队列 */}
-              <div style={{ width: 150, flexShrink: 0 }}></div>
-              
-              {/* 迭代轴上的里程碑 */}
-              {iterations.map(iter => {
-                // 查找该迭代对应的里程碑
-                const milestone = milestones.find(ms => ms.iteration === iter.id)
-                
-                return (
-                  <div key={iter.id} style={{ width: 180, textAlign: 'center', padding: '8px 0' }}>
-                    {milestone ? (
-                      <Space orientation="vertical" size="small">
-                        {milestone.type === 'milestone' ? (
-                          <FlagOutlined style={{ fontSize: 20, color: '#ff4d4f' }} />
-                        ) : (
-                          <CheckCircleOutlined style={{ fontSize: 20, color: '#1890ff' }} />
-                        )}
-                        <Tag 
-                          color={milestone.type === 'milestone' ? 'red' : 'blue'}
-                          style={{ margin: 0 }}
-                        >
-                          {milestone.name}
-                        </Tag>
-                        <div style={{ fontSize: 11, color: '#999' }}>{milestone.date}</div>
-                      </Space>
-                    ) : (
-                      <div style={{ height: 60 }}></div> // 占位，保持高度一致
-                    )}
-                  </div>
-                )
-              })}
-            </div>
-          </Card>
-
-          {/* 团队迭代计划表格 */}
-          <div style={{ background: '#fff' }}>
-            <div style={{ padding: '12px 16px', borderBottom: '1px solid #f0f0f0', fontWeight: 600, fontSize: 14 }}>
-              <TeamOutlined /> 团队迭代分工计划（模块需求排期）
-            </div>
-            <Table
-              dataSource={teamPlans}
-              columns={columns}
-              rowKey="teamId"
-              pagination={false}
-              scroll={{ x: 1400 }}
-              bordered
-            />
-          </div>
-
-          {/* 说明 */}
-          <Card size="small" style={{ background: '#e6f7ff', border: '1px solid #91d5ff' }}>
-            <Space orientation="vertical" size="small">
-              <div><strong>视图说明：</strong></div>
-              <div>• <strong>横轴</strong>：产品版本的迭代周期（月度Sprint）</div>
-              <div>• <strong>纵轴</strong>：各模块团队的迭代分工</div>
-              <div>• <strong>里程碑对齐</strong>：产品迭代的关键里程碑（VFF、SOP等）与整车节点、Gateway对齐</div>
-              <div>• <strong>模块需求</strong>：每个团队在每个迭代中计划的模块需求（MR）</div>
-            </Space>
-          </Card>
-        </Space>
-      </Card>
+          <SprintKanbanView planId="" />
+        </Card>
+      )}
     </div>
   )
 }

@@ -3,29 +3,32 @@
  */
 
 // 状态枚举
-export enum Status {
-  DRAFT = 'DRAFT',
-  IN_PROGRESS = 'IN_PROGRESS',
-  COMPLETED = 'COMPLETED',
-  CANCELLED = 'CANCELLED',
-  BLOCKED = 'BLOCKED',
-}
+export const Status = {
+  DRAFT: 'DRAFT',
+  IN_PROGRESS: 'IN_PROGRESS',
+  COMPLETED: 'COMPLETED',
+  CANCELLED: 'CANCELLED',
+  BLOCKED: 'BLOCKED',
+} as const
+export type Status = typeof Status[keyof typeof Status]
 
 // 优先级枚举
-export enum Priority {
-  P0 = 'P0', // 最高优先级
-  P1 = 'P1', // 高优先级
-  P2 = 'P2', // 中优先级
-  P3 = 'P3', // 低优先级
-}
+export const Priority = {
+  P0: 'P0', // 最高优先级
+  P1: 'P1', // 高优先级
+  P2: 'P2', // 中优先级
+  P3: 'P3', // 低优先级
+} as const
+export type Priority = typeof Priority[keyof typeof Priority]
 
 // MoSCoW分类
-export enum MoSCoW {
-  MUST = 'MUST', // 必须有
-  SHOULD = 'SHOULD', // 应该有
-  COULD = 'COULD', // 可以有
-  WONT = 'WONT', // 不会有
-}
+export const MoSCoW = {
+  MUST: 'MUST', // 必须有
+  SHOULD: 'SHOULD', // 应该有
+  COULD: 'COULD', // 可以有
+  WONT: 'WONT', // 不会有
+} as const
+export type MoSCoW = typeof MoSCoW[keyof typeof MoSCoW]
 
 // 基础实体接口
 export interface BaseEntity {
@@ -34,6 +37,15 @@ export interface BaseEntity {
   updatedAt: string
   createdBy?: string
   updatedBy?: string
+}
+
+export interface BaseListItem extends BaseEntity {
+  name: string
+  code: string
+  description?: string
+  status: string
+  priority?: string
+  owner?: string
 }
 
 // 分页参数
@@ -111,12 +123,13 @@ export interface ChangeLog {
 }
 
 // 审批状态
-export enum ApprovalStatus {
-  PENDING = 'PENDING',
-  APPROVED = 'APPROVED',
-  REJECTED = 'REJECTED',
-  CANCELLED = 'CANCELLED',
-}
+export const ApprovalStatus = {
+  PENDING: 'PENDING',
+  APPROVED: 'APPROVED',
+  REJECTED: 'REJECTED',
+  CANCELLED: 'CANCELLED',
+} as const
+export type ApprovalStatus = typeof ApprovalStatus[keyof typeof ApprovalStatus]
 
 // 审批记录
 export interface ApprovalRecord {
